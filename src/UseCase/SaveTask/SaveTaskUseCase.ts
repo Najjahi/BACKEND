@@ -8,9 +8,21 @@ export default class SaveTaskUseCase implements UseCase<Promise<Task>, [dto: Sav
   constructor() {}
 
   async handle(dto: SaveTaskDto) {
-    /*
-    * @todo IMPLEMENT HERE : VALIDATION DTO, DATA SAVING, ERROR CATCHING
-     */
+    const validationErrors = await validate(dto);
+    if (validationErrors.length > 0) {
+      throw new BadRequestException('Validation failed', validationErrors);
+    }
+
+    try {
+      // Sauvegarde de la tâche avec Prisma
+      await this.prisma.task.create({
+        data: {
+          title: dto.title,
+          description: dto.description,
+          dueDate: dto.dueDate,
+          // Ajoute d'autres champs en fonction de ton DTO
+        },
+      });
 
     return null;
   }
